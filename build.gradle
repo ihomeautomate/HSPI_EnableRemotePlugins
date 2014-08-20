@@ -1,3 +1,5 @@
+
+
 buildscript {
     repositories {
         //maven { /* For use of snapshots */
@@ -9,6 +11,7 @@ buildscript {
     dependencies {
         classpath 'eu.ihomeautomate.gradle:gradle-homeseer-plugin:0.1.0'
         classpath 'au.org.trogdor.xamarin-gradle-plugins:xamarin-publish-plugin:0.1-iHomeAutomate'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
     }
 }
 
@@ -33,3 +36,6 @@ group='eu.ihomeautomate.homeseer'
 //    buildscript.configurations.classpath.each { println it }
 //}
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}

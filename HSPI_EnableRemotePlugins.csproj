@@ -44,5 +44,14 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="build.gradle" />
+    <None Include="README.md" />
+    <None Include="LICENSE.txt" />
+    <None Include="gradle\wrapper\gradle-wrapper.jar" />
+    <None Include="gradle\wrapper\gradle-wrapper.properties" />
+    <None Include="config\HEADER" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="gradle\" />
+    <Folder Include="config\" />
   </ItemGroup>
 </Project>
