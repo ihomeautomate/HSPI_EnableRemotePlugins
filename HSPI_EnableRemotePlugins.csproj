@@ -49,6 +49,11 @@
     <None Include="gradle\wrapper\gradle-wrapper.jar" />
     <None Include="gradle\wrapper\gradle-wrapper.properties" />
     <None Include="config\HEADER" />
+    <None Include="gradle\credentials.gradle" />
+    <None Include="gradle\publishing.gradle" />
+    <None Include="gradle.properties" />
+    <None Include="gradle\artifactory.gradle" />
+    <None Include="gradle\bintray.gradle" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gradle\" />

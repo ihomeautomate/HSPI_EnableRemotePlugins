@@ -1,4 +1,7 @@
-
+apply from: 'gradle/credentials.gradle'
+apply from: 'gradle/publishing.gradle'
+apply from: 'gradle/artifactory.gradle'
+apply from: 'gradle/bintray.gradle'
 
 buildscript {
     repositories {
@@ -11,12 +14,12 @@ buildscript {
     dependencies {
         classpath 'eu.ihomeautomate.gradle:gradle-homeseer-plugin:0.1.0'
         classpath 'au.org.trogdor.xamarin-gradle-plugins:xamarin-publish-plugin:0.1-iHomeAutomate'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
     }
 }
 
 apply plugin: 'homeseer'
-apply plugin: 'xamarin-publish-plugin'
 
 homeseer {
     homeseerSdkDownloadUrl = 'http://www.homeseer.com/updates3/hslinux_zee_3_0_0_106.tar.gz'
@@ -28,9 +31,6 @@ xamarin {
         projectFile 'HSPI_EnableRemotePlugins.csproj'        
     }
 }
-
-version='0.1.0-SNAPSHOT'
-group='eu.ihomeautomate.homeseer'
 
 //task showClasspath << {
 //    buildscript.configurations.classpath.each { println it }
