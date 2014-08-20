@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        //maven { /* For use of snapshots */
+        //    name 'JFrog OSS snapshot repo'
+        //    url  'https://oss.jfrog.org/oss-snapshot-local/'
+        //}
+        jcenter()
+    }
+    dependencies {
+        classpath 'eu.ihomeautomate.gradle:gradle-homeseer-plugin:0.1.0'
+        classpath 'au.org.trogdor.xamarin-gradle-plugins:xamarin-publish-plugin:0.1-iHomeAutomate'
+    }
+}
+
+apply plugin: 'homeseer'
+apply plugin: 'xamarin-publish-plugin'
+
+homeseer {
+    homeseerSdkDownloadUrl = 'http://www.homeseer.com/updates3/hslinux_zee_3_0_0_106.tar.gz'
+    sdkReferencesTargetDirectory = "References"
+}
+
+xamarin {
+    genericLibraryProject {
+        projectFile 'HSPI_EnableRemotePlugins.csproj'        
+    }
+}
+
+version='0.1.0-SNAPSHOT'
+group='eu.ihomeautomate.homeseer'
+
+//task showClasspath << {
+//    buildscript.configurations.classpath.each { println it }
+//}
+
