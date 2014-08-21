@@ -5,7 +5,10 @@ publishing {
     publications {
 		/* Currently not used, a xamarin publication is used instead. */
         mavenArtifacts(MavenPublication) {
-        	file('build/somefile.txt')
+        	//artifact(file('build/somefile.txt')) {
+            //  classifier "documentation"
+            //  extension "html"
+            //}
 
             pom.withXml {
                 def Node root = asNode()

@@ -54,6 +54,8 @@
     <None Include="gradle.properties" />
     <None Include="gradle\artifactory.gradle" />
     <None Include="gradle\bintray.gradle" />
+    <None Include="gradlew" />
+    <None Include="gradlew.bat" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gradle\" />
