@@ -1,41 +1,30 @@
-// configuration of the Maven artifacts
-apply plugin: 'xamarin-publish-plugin'
+apply plugin: 'eu.ihomeautomate.gradle.xamarin-publish'
 
-publishing {
-    publications {
-		/* Currently not used, a xamarin publication is used instead. */
-        mavenArtifacts(MavenPublication) {
-        	//artifact(file('build/somefile.txt')) {
-            //  classifier "documentation"
-            //  extension "html"
-            //}
+xamarinPublish {
+    withPomXml {
+        def Node root = asNode()
+        root.appendNode('name', 'HSPI_EnableRemotePlugins')
+        root.appendNode('description', project.project_description)
+        root.appendNode('url', project.project_url)
 
-            pom.withXml {
-                def Node root = asNode()
-                root.appendNode('name', 'HSPI_EnableRemotePlugins')
-                root.appendNode('description', project.project_description)
-                root.appendNode('url', project.project_url)
+        def issues = root.appendNode( 'issueManagement' )
+        issues.appendNode( 'system', 'github' )
+        issues.appendNode( 'url', project.project_issues_url )
 
-                def issues = root.appendNode( 'issueManagement' )
-                issues.appendNode( 'system', 'github' )
-                issues.appendNode( 'url', project.project_issues_url )
+        def scm = root.appendNode( 'scm' )
+        scm.appendNode( 'url', project.project_scm )
+        scm.appendNode( 'connection', project.project_connection)
+        scm.appendNode( 'developerConnection', project.project_dev_connection )
 
-                def scm = root.appendNode( 'scm' )
-                scm.appendNode( 'url', project.project_scm )
-                scm.appendNode( 'connection', project.project_connection)
-                scm.appendNode( 'developerConnection', project.project_dev_connection )
+        def license = root.appendNode( 'licenses' ).appendNode( 'license' );
+        license.appendNode( 'name', 'The GNU Lesser General Public License, Version 2.1' )
+        license.appendNode( 'url', 'http://opensource.org/licenses/lgpl-2.1.php' )
+        license.appendNode( 'distribution', 'repo' )
 
-                def license = root.appendNode( 'licenses' ).appendNode( 'license' );
-                license.appendNode( 'name', 'The GNU Lesser General Public License, Version 2.1' )
-                license.appendNode( 'url', 'http://opensource.org/licenses/lgpl-2.1.php' )
-                license.appendNode( 'distribution', 'repo' )
-
-                def dev = root.appendNode( 'developers' ).appendNode( 'developer' );
-                dev.appendNode( 'id', project.project_vendor )
-                dev.appendNode( 'name', project.project_vendor_name )
-                dev.appendNode( 'organization', 'iHomeAutomate' )
-                dev.appendNode( 'organizationUrl', 'http://www.iHomeAutomate.eu' )
-            }
-        }
+        def dev = root.appendNode( 'developers' ).appendNode( 'developer' );
+        dev.appendNode( 'id', project.project_vendor )
+        dev.appendNode( 'name', project.project_vendor_name )
+        dev.appendNode( 'organization', 'iHomeAutomate' )
+        dev.appendNode( 'organizationUrl', 'http://www.iHomeAutomate.eu' )
     }
 }

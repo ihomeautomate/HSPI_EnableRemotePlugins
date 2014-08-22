@@ -5,21 +5,21 @@ apply from: 'gradle/bintray.gradle'
 
 buildscript {
     repositories {
-        //maven { /* For use of snapshots */
-        //    name 'JFrog OSS snapshot repo'
-        //    url  'https://oss.jfrog.org/oss-snapshot-local/'
-        //}
+        maven { /* For use of snapshots */
+            name 'JFrog OSS snapshot repo'
+            url  'https://oss.jfrog.org/oss-snapshot-local/'
+        }
         jcenter()
     }
     dependencies {
-        classpath 'eu.ihomeautomate.gradle:gradle-homeseer-plugin:0.1.0'
-        classpath 'au.org.trogdor.xamarin-gradle-plugins:xamarin-publish-plugin:0.1-iHomeAutomate'
+        classpath 'eu.ihomeautomate.gradle:gradle-homeseer-plugin:0.2.0-SNAPSHOT'
+        classpath 'eu.ihomeautomate.gradle:gradle-xamarin-publish-plugin:1.0.0-SNAPSHOT'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
     }
 }
 
-apply plugin: 'homeseer'
+apply plugin: 'eu.ihomeautomate.gradle.homeseer'
 
 homeseer {
     homeseerSdkDownloadUrl = 'http://www.homeseer.com/updates3/hslinux_zee_3_0_0_106.tar.gz'
