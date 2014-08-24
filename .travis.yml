@@ -1,5 +1,8 @@
 ﻿language: objective-c
 
+os:
+- osx
+
 env:
  global:
   - EnableNuGetPackageRestore=true 
@@ -7,6 +10,7 @@ env:
   - MONO_VERSION="3.2.6" DMG=0
 
 before_install:
+ - brew update
  - "if [ \"$DMG\" = \"0\" ]; then wget \"http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg\"; fi"
  - "if [ \"$DMG\" = \"0\" ]; then sudo installer -pkg \"MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg\" -target /; fi"
  - "if [ \"$DMG\" = \"1\" ]; then wget \"http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.dmg\"; fi"
