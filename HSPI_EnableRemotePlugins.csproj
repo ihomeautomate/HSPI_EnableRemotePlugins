@@ -58,6 +58,7 @@
     <None Include="gradlew.bat" />
     <None Include=".gitignore" />
     <None Include="install\build.gradle" />
+    <None Include=".travis.yml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gradle\" />

@@ -1,0 +1,19 @@
+﻿language: objective-c
+
+env:
+ global:
+  - TERM=dumb
+  - EnableNuGetPackageRestore=true 
+  # bintray user
+  #- secure: "TODO"
+  # bintray key
+  #- secure: "TODO"
+ matrix:
+  - MONO_VERSION="3.6.0"
+
+before_install:
+ - wget "http://download.mono-project.com/archive/3.6.0/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+ - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
+
+script:
+ - ./gradlew -PbuildInfo.build.number=$TRAVIS_BUILD_NUMBER -PbuildInfo.buildUrl=https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_JOB_ID} -PbuildInfo.buildAgent.name=$USER -PbuildInfo.principal=$USER clean buildAll
