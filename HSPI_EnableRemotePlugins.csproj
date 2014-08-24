@@ -57,9 +57,11 @@
     <None Include="gradlew" />
     <None Include="gradlew.bat" />
     <None Include=".gitignore" />
+    <None Include="install\build.gradle" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gradle\" />
     <Folder Include="config\" />
+    <Folder Include="install\" />
   </ItemGroup>
 </Project>

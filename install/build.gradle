@@ -1,0 +1,35 @@
+repositories {
+    //maven { /* For use of snapshots */
+    //    name 'JFrog OSS snapshot repo'
+    //    url  'https://oss.jfrog.org/oss-snapshot-local/'
+    //}
+    //jcenter()
+    mavenLocal()
+}
+
+configurations {
+    install
+}
+
+dependencies {
+    install 'eu.ihomeautomate.homeseer:HSPI_EnableRemotePlugins:0.0.1-SNAPSHOT:release@dll'
+    //install 'eu.ihomeautomate.homeseer:HSPI_EnableRemotePlugins:0.0.1-SNAPSHOT:debug@dll'
+    //install 'eu.ihomeautomate.homeseer:HSPI_EnableRemotePlugins:0.0.1-SNAPSHOT:debug-symbols@dll.mdb'
+}
+
+task listJars << {
+    configurations.install.each { File file -> println file.name }
+}
+
+task install << {
+    configurations.install.resolvedConfiguration.resolvedArtifacts.each() {artifact->
+        def newName = "${artifact.name}.${artifact.extension}"
+        println "${newName}"
+
+        copy {
+            from artifact.file
+            into 'out'
+            rename { newName }
+        }   
+    }
+}
