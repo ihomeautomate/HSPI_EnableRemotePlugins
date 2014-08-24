@@ -1,5 +1,4 @@
-﻿# https://github.com/exKAZUu/TravisTemplateForCSharpMono/blob/master/.travis.yml
-language: objective-c
+﻿language: objective-c
 
 env:
  global:
