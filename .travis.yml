@@ -2,7 +2,12 @@ language: objective-c
 
 env:
  global:
+  - TERM=dumb
   - EnableNuGetPackageRestore=true 
+  # bintray user
+  - secure: "yYFGGEABx4VU598F11lHIxZlH/MJkFtdPDbCj1PPNt7Z0dt1wRKOuefcJuo4aUAP2d+44XssI4Hr65A9aUajsr70vx3g2s/IPHtPriQ/lTEnInT+qM5CcXgpGSJMelKWhLb7iRm4+d7/GtuNT8M57jKcAQ98jE+Ur4GgxsZABX0="
+  # bintray key
+  - secure: "QJ/1jfr6nTSv4L9FD3/4A3dV+XzzRzrRmHx6Pgd+Wr6TrBysylZ/76W3M8SeuQ2n2gO4ugb49PSmCfNX7rQMIuuIRGhdgcp8t58C3yVv+OjLpzJMOmZBFC0PgWEu33kMSUorRYovH32AIcpec9p/Cc6BmrGsKcVlh8mppJHXkRE="
  matrix:
   - MONO_VERSION="3.2.6" DMG=0
 
