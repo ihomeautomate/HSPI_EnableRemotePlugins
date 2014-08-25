@@ -19,4 +19,4 @@ before_install:
  - "if [ \"$DMG\" = \"1\" ]; then sudo installer -pkg \"/Volumes/Mono Framework MDK ${MONO_VERSION}/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg\" -target /; fi"
 
 script:
- - ./gradlew -PbuildInfo.build.number=$TRAVIS_BUILD_NUMBER -PbuildInfo.buildUrl=https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_JOB_ID} -PbuildInfo.buildAgent.name=$USER -PbuildInfo.principal=$USER clean buildAll artifactoryPublish
+ - ./gradlew -PbuildInfo.build.number=$TRAVIS_BUILD_NUMBER -PbuildInfo.buildUrl=https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_JOB_ID} -PbuildInfo.buildAgent.name=$USER -PbuildInfo.principal=$USER clean buildAll artifactoryPublish --info
