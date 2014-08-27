@@ -24,6 +24,10 @@ using HSCF.Communication.Scs.Communication.EndPoints.Tcp;
 using System.Collections.Specialized;
 using System.Net.Sockets;
 using HomeSeerAPI;
+using System.Timers;
+using System.Threading;
+using System.IO;
+using System.Reflection;
 
 namespace HSPI_EnableRemotePlugins
 {
@@ -33,7 +37,12 @@ namespace HSPI_EnableRemotePlugins
 		private hsapplication hsApplication;
 		private IScsServiceApplication scsServiceApplication;	
 
+		private System.Timers.Timer checkPluginInitTimer;
+		private System.Timers.Timer disableHSCheckTimer;
+
 		private EventHandler<ServiceClientEventArgs> clientConnectedEventhandler;
+		private ElapsedEventHandler disableHSCheckTimerEventHandler;
+		private ElapsedEventHandler checkPluginInitTimerEventHandler;
 
 		private static string PLUGIN_NAME = "EnableRemotePlugins";
 		private static int PLUGIN_API_PORT = 10400;	
@@ -107,6 +116,21 @@ namespace HSPI_EnableRemotePlugins
 				this.appCallbackAPI = null;
 				this.clientConnectedEventhandler = null;
 			}
+
+			if (checkPluginInitTimer != null) {
+				checkPluginInitTimer.Stop ();
+				if (checkPluginInitTimerEventHandler != null) {
+					checkPluginInitTimer.Elapsed -= checkPluginInitTimerEventHandler;
+				}
+			}
+
+			if (disableHSCheckTimer != null) {
+				disableHSCheckTimer.Stop ();
+				if (disableHSCheckTimerEventHandler != null) {
+					disableHSCheckTimer.Elapsed -= disableHSCheckTimerEventHandler;
+				}
+
+			}
 		}
 
 		public bool RaisesGenericCallbacks ()
@@ -122,6 +146,10 @@ namespace HSPI_EnableRemotePlugins
 		{
 			if (hsApplication != null) {
 				hsApplication.WriteLog (PLUGIN_NAME, "Init plugin");
+
+				startTimers();
+				initTimerEventHandlers();
+				addExePluginsToTifList (); // Booh, this will only work when the HSPI_<plugin>.exe is compiled against the correct Zee references.
 
 				try {
 					clientConnectedEventhandler = new EventHandler<ServiceClientEventArgs> (clientConnected);
@@ -142,9 +170,9 @@ namespace HSPI_EnableRemotePlugins
 					return "Could not init plugin. Is port " + PLUGIN_API_PORT + " already in use?";
 				}
 			}
-			
+
 			return "Could not init plugin, no hsapplication available.";
-			
+
 		}
 
 		public IPlugInAPI.PollResultInfo PollDevice (int dvref)
@@ -402,7 +430,185 @@ namespace HSPI_EnableRemotePlugins
 
 		private void clientConnected (object sender, ServiceClientEventArgs e)
 		{
-			hsApplication.WriteLog (PLUGIN_NAME, "Incoming remote connection " + e.Client.ipaddress);
+			disableHSCheckTimer.Start();
+			checkPluginInitTimer.Interval = 5;
+
+			hsApplication.WriteLog (PLUGIN_NAME, "Incoming remote connection " + e.Client.ipaddress + " (ClientId " + e.Client.ClientId + ")");
+
+			Console.WriteLine ("You should be able to remotely connect the plugin if it's free or one of the below entries:");
+			for (int i=0; i<appCallbackAPI.TifList.Count; i++) {
+				Scheduler.Classes.clsPlugInfo pluginfo = (Scheduler.Classes.clsPlugInfo)appCallbackAPI.TifList.GetByIndex(i);
+				Console.WriteLine (pluginfo.FileName + " :: " + pluginfo.PluginName + " :: " + pluginfo.RegistrationStatus + " :: " + pluginfo.AccessLevel);
+
+				// Regarding remote plugins and its licensing mechanism:
+				// "Yes, you need to have a copy on the HS machine. The reason is that when the remote plug-in tries to connect, the copy on the HS machine is what is used to determine the licensing that it uses. If it is a licensed plug-in, then HS has to check to see if there is a license. "
+				// source: http://forums.homeseer.com/showthread.php?t=169287
+
+				// The workaround addExePluginsToTifList () unfortunately does not work due to conflicting HomeSeerAPI.IPlugInAPI (Zee vs HS3) interface :-(
+			}
+		}
+
+		private void checkPluginTimer_Elapsed (object sender, ElapsedEventArgs e)
+		{
+			checkPluginsToInitialize();
+		}
+
+		private void disableHSCheckTimer_Elapsed (object sender, ElapsedEventArgs e)
+		{
+			appCallbackAPI.StopCheckTimer(); // It'll make sure the out-of-box plugin check is disabled for our custom initialization to be triggered.
+		}
+
+		private void startTimers()
+		{
+			hsApplication.WriteLog (PLUGIN_NAME, "Starting timer(s) for remote plugins to be initialized.");
+
+			disableHSCheckTimer = new System.Timers.Timer ();
+			disableHSCheckTimer.Interval = 5;
+			disableHSCheckTimer.AutoReset = false;
+			disableHSCheckTimer.Stop(); // By default, do not enable. Only enable when there is a new incoming connection.
+
+			checkPluginInitTimer = new System.Timers.Timer ();
+			checkPluginInitTimer.Interval = 30000;
+			checkPluginInitTimer.AutoReset = false;
+			checkPluginInitTimer.Start();
+		}
+
+		private void initTimerEventHandlers()
+		{
+			hsApplication.WriteLog (PLUGIN_NAME, "Initializing eventhandler(s) for remote plugins to be initialized.");
+
+			if (disableHSCheckTimerEventHandler == null) {
+				disableHSCheckTimerEventHandler = new ElapsedEventHandler (disableHSCheckTimer_Elapsed);
+				if (disableHSCheckTimer != null) {
+					disableHSCheckTimer.Elapsed += disableHSCheckTimerEventHandler;
+				}
+			}
+
+			if (checkPluginInitTimerEventHandler == null) {
+				checkPluginInitTimerEventHandler = new ElapsedEventHandler (checkPluginTimer_Elapsed);
+				if (checkPluginInitTimer != null) {
+					checkPluginInitTimer.Elapsed += checkPluginInitTimerEventHandler;
+				}
+			}
+		}
+
+		private void checkPluginsToInitialize ()
+		{
+			checkPluginInitTimer.Stop();
+
+			object syncRoot = appCallbackAPI.IOobjsPending.SyncRoot;
+			lock (syncRoot) {
+				if (appCallbackAPI.IOobjsPending.Count > 0) {
+					checkPluginInitTimer.Interval = 30000;
+					hsApplication.WriteLog (PLUGIN_NAME, "Preparing to send .InitIO to " + appCallbackAPI.IOobjsPending.Count + " plugin(s).");
+
+					for (int i = 0; i < appCallbackAPI.IOobjsPending.Count; i++) {
+						clsHSPI.PluginHolder pluginHolder = (clsHSPI.PluginHolder)appCallbackAPI.IOobjsPending.GetByIndex (i);
+						if (pluginHolder == null) {
+							i++;
+							continue;
+						}
+
+						if (pluginHolder.waitingToConnect | pluginHolder.shuttingDown) {
+							i++;
+							continue;
+						}
+
+						HomeSeerAPI.IPlugInAPI clientProxy = pluginHolder.client.GetClientProxy<HomeSeerAPI.IPlugInAPI> ();
+						pluginHolder.obj_ref = clientProxy; 
+
+						hsApplication.WriteLog (PLUGIN_NAME, "'" + pluginHolder.obj_name + ":" + pluginHolder.InstanceName + "'.InitIO(" + pluginHolder.sPortNumber + ")");
+						string text = clientProxy.InitIO (pluginHolder.sPortNumber);
+
+						if (text == "") {
+							if (!pluginHolder.obj_ref.SupportsMultipleInstances () & pluginHolder.InstanceName != "") { // An instancename given when not supporting multiple instances? :-)
+								pluginHolder.InstanceName = "";
+							}
+							if (appCallbackAPI.IOobjs.ContainsKey (pluginHolder.obj_name + ":" + pluginHolder.InstanceName)) {
+								appCallbackAPI.IOobjs.Remove (pluginHolder.obj_name + ":" + pluginHolder.InstanceName);
+							}
+							appCallbackAPI.IOobjs.Add (pluginHolder.obj_name + ":" + pluginHolder.InstanceName, pluginHolder);
+							PageBuilderAndMenu.RebuildPlugMenu ();
+
+							hsApplication.WriteLog (PLUGIN_NAME, "'" + pluginHolder.obj_name + ":" + pluginHolder.InstanceName + "' initialized.");
+						}
+						else {
+							hsApplication.WriteLog (PLUGIN_NAME, "InitIO failed for '" + pluginHolder.obj_name + ":" + pluginHolder.InstanceName + "' > " + text);
+							pluginHolder.obj_ref.ShutdownIO ();
+						}	
+					}
+					appCallbackAPI.IOobjsPending.Clear ();
+					disableHSCheckTimer.Stop(); // No pending plugins until the next connection, let's disable.
+				}
+			}
+
+			checkPluginInitTimer.Start();
+		}
+
+		/**
+		 * Find all HSPI_*.exe in hsApplication.GetAppPath() and try to instantiate their HSPI class
+		 * !! Note, there are API conflicts between HS3 and Zee interfaces. It's currently not possible to add out-of-box HS3 plugins.
+		 * It should work however when plugins are recompiled against the correct Zee references.
+		 * */
+		private void addExePluginsToTifList() {
+			string[] exePluginPaths = Directory.GetFiles(hsApplication.GetAppPath(), "HSPI_*.exe");
+			foreach (string exePluginPath in exePluginPaths) {
+				if (!exePluginPath.Contains ("vshost")) { /* Skip that */
+					String pluginFilename = Path.GetFileName (exePluginPath);
+					String className = pluginFilename.Replace(".exe", ".HSPI");
+					procesPluginInfo (exePluginPath, pluginFilename, className);
+				}
+			}				
+		}
+
+		private void procesPluginInfo (string exePluginPath, string pluginFilename, string className)
+		{
+			AppDomain appDomain = null;
+			AppDomainSetup appDomainSetup = new AppDomainSetup ();
+			appDomainSetup.ApplicationBase = hsApplication.GetAppPath ();
+			if (File.Exists (exePluginPath + ".config")) {
+				appDomainSetup.ConfigurationFile = exePluginPath + ".config";
+			}
+			appDomainSetup.ApplicationName = PLUGIN_NAME + "AppDomain";
+			appDomain = AppDomain.CreateDomain (PLUGIN_NAME + "AppDomain", null, appDomainSetup);
+			clsHSPI.Worker worker = (clsHSPI.Worker)appDomain.CreateInstanceAndUnwrap (typeof(clsHSPI.Worker).Assembly.FullName, typeof(clsHSPI.Worker).FullName);
+			worker.gpath = hsApplication.GetAppPath ();
+			worker.filename = pluginFilename;
+			worker.classname = className;
+			try {
+				worker.ProcessAssembly (); // TypeLoadException :-?. Mismatching HomeSeerAPI.IPlugInAPI interface :-(
+				/*
+				FileStream fileStream = new FileStream (hsApplication.GetAppPath() + "/" + pluginFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+				BinaryReader binaryReader = new BinaryReader (fileStream);
+				byte[] rawAssembly = binaryReader.ReadBytes (Convert.ToInt32 (fileStream.Length));
+				fileStream.Close ();
+				binaryReader.Close ();
+				Assembly assembly = AppDomain.CurrentDomain.Load (rawAssembly);
+				HomeSeerAPI.IPlugInAPI hspi = (HomeSeerAPI.IPlugInAPI)assembly.CreateInstance (className, false, BindingFlags.CreateInstance, null, null, null, null);
+				Console.WriteLine(hspi.Name + " :: " + hspi.AccessLevel());
+				*/
+
+				Scheduler.Classes.clsPlugInfo plugInfo = new Scheduler.Classes.clsPlugInfo ();
+				plugInfo.ProgID = className;
+				plugInfo.HSCOMPort = worker.comport;
+				plugInfo.PluginName = worker.plugname;
+				plugInfo.Capabilities = worker.capabilites;
+				plugInfo.AccessLevel = worker.accessLevel;
+				plugInfo.FileName = pluginFilename;
+				plugInfo.SupportsMultipleInstances = worker.supportsMultipleInstances;
+				plugInfo.SupportsMultipleInstancesSingleEXE = worker.supportsMultipleInstancesSingleEXE;
+				plugInfo.RegistrationStatus = "NotChecked";
+				appCallbackAPI.TifList.Add (plugInfo.PluginName + ":", plugInfo);
+				hsApplication.WriteLog (PLUGIN_NAME, "Class " + className + " (" + pluginFilename + ") inspected for plug-info list");
+			}
+			catch (System.TypeLoadException typeLoadException) {
+				hsApplication.WriteLog (PLUGIN_NAME, "Could not inspect " + className + " (" + pluginFilename + "). Failed with " + worker.errorMessage);
+				Console.WriteLine (typeLoadException);
+			}
+			catch (Exception ex) {
+				hsApplication.WriteLog (PLUGIN_NAME, "Could not inspect " + className + " (" + pluginFilename + "). Failed with " + worker.errorMessage);
+				Console.WriteLine (ex);
+			}
 		}
 
 		private enum PluginAccessLevel
@@ -411,5 +617,4 @@ namespace HSPI_EnableRemotePlugins
 			LICENSED = 2
 		}
 	}
-}
-
+}											
