@@ -42,7 +42,7 @@ Build from source:
     
 ### Copyright and licensing
     
-Code and documentation copyright 2014 [iHomeAutomate](http://www.iHomeAutomate.eu). Code released under [the LGPL-2.1 license](LICENSE.txt). For commercial licensing please contact <info[at]ihomeautomate.eu>
+Code and documentation copyright 2014 [iHomeAutomate](http://www.iHomeAutomate.eu). Code released under [the LGPL-2.1 license](LICENSE.txt). For commercial licensing please contact info[at]ihomeautomate.eu
     
 ## Social media
 
