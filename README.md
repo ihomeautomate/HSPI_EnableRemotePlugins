@@ -4,11 +4,43 @@ HSPI_EnableRemotePlugins ![HomeSeer Logo](https://lh5.googleusercontent.com/-ouD
 This HomeSeer plugin enables remote connections to your HS3-Pi or HomeSeer HomeTroller Zee.
 
 ## Installation
-* Grab the latest release available on [Bintray](https://bintray.com/ihomeautomate/HomeSeer/HSPI_EnableRemotePlugins) 
-* Copy it to `/usr/local/HomeSeer` on your HS3-Pi or HomeTroller Zee 
+* Grab the latest release available on [Bintray](https://bintray.com/ihomeautomate/HomeSeer/HSPI_EnableRemotePlugins) and copy it to `/usr/local/HomeSeer` on your HS3-Pi or HomeTroller Zee
+ 
+        ssh homeseer@<homeseer-server-ip>
+        homeseer@HomeTrollerZEE ~ $ wget -O /usr/local/HomeSeer/HSPI_EnableRemotePlugins.dll "http://dl.bintray.com/ihomeautomate/HomeSeer/eu/ihomeautomate/homeseer/HSPI_EnableRemotePlugins/0.0.1/HSPI_EnableRemotePlugins-0.0.1-release.dll"
+ 
 * Restart HomeSeer
-* You should now be able to connect to HomeSeer via a remote-plugin-executable using `mono HSPI_<remote-plugin-name>.exe server=<homeseer-ip>`
+        
+        homeseer@HomeTrollerZEE ~ $ sudo killall mono
+        homeseer@HomeTrollerZEE ~ $ cd /usr/local/HomeSeer
+        homeseer@HomeTrollerZEE /usr/local/HomeSeer $ sudo ./go
+        
+* You should now be able to see `EnableRemotePlugins` showing up in the console output.
 
+        [Startup]->Checking for available plug-ins
+        [Plug-In]->Found plug-in: EnableRemotePlugins, version: 0.0.1.35667
+
+* Browse to `http://<homeseer-server-ip>/interfaces` and enable `EnableRemotePlugins`-plugin
+* Console output shows `EnableRemotePlugins`-plugin initializing
+
+        [EnableRemotePlugins]->Init plugin
+        [EnableRemotePlugins]->Starting timer(s) for remote plugins to be initialized.
+        [EnableRemotePlugins]->Initializing eventhandler(s) for remote plugins to be initialized.
+        [EnableRemotePlugins]->Remote plug-in API interface started on port 10400
+        [Plug-In]->Finished initializing plug-in EnableRemotePlugins
+
+* You should now be able to connect to HomeSeer via a remote-plugin-executable (client)   
+
+        mono HSPI_<remote-plugin-name>.exe server=<homeseer-server-ip>
+
+* Console output shows new incoming connection and initialization (server):
+
+        [EnableRemotePlugins]->Incoming remote connection <client ip:port> (ClientId 1)
+        [EnableRemotePlugins]->Incoming remote connection <client ip:port> (ClientId 2)
+        [Info]-><Plugin Name>. IP:<client ip:port>
+        [EnableRemotePlugins]->Preparing to send .InitIO to 1 plugin(s).
+        [EnableRemotePlugins]->'<Plugin Name>:'.InitIO(COM1)
+        [EnableRemotePlugins]->'<Plugin Name>:' initialized.                 
 
 ## Known issues
 
@@ -22,7 +54,7 @@ A possible workaround (untested):
 * Reconnect the remote plugin    
 * Rejoice?
 
-More info about remote-plugin licensing quircks can be found in this [reference thread](http://forums.homeseer.com/showthread.php?t=169287)
+More info can be found in this [reference thread](http://forums.homeseer.com/showthread.php?t=169287)
 
 ## Developers
 ### Get the source code and compile
