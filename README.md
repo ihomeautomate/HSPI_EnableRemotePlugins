@@ -7,9 +7,7 @@ This HomeSeer plugin enables remote connections to your HS3-Pi or HomeSeer HomeT
 * Grab the latest release available on [Bintray](https://bintray.com/ihomeautomate/HomeSeer/HSPI_EnableRemotePlugins) 
 * Copy it to `/usr/local/HomeSeer` on your HS3-Pi or HomeTroller Zee 
 * Restart HomeSeer
-* You should now be able to connect to HomeSeer via a remote-plugin-executable    
-
-        mono HSPI_<remote-plugin-name>.exe server=<homeseer-ip>
+* You should now be able to connect to HomeSeer via a remote-plugin-executable using `mono HSPI_<remote-plugin-name>.exe server=<homeseer-ip>`
 
 
 ## Known issues
@@ -24,7 +22,7 @@ A possible workaround (untested):
 * Reconnect the remote plugin    
 * Rejoice?
 
-More info can be found in this [reference thread](http://forums.homeseer.com/showthread.php?t=169287)
+More info about remote-plugin licensing quircks can be found in this [reference thread](http://forums.homeseer.com/showthread.php?t=169287)
 
 ## Developers
 ### Get the source code and compile
