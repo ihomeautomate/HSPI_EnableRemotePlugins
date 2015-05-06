@@ -1,6 +1,6 @@
 ﻿/*
 HSPI_EnableRemotePlugins - HomeSeer 3 Plugin to enable remote plug-in API interface (for HomeSeer HomeTroller Zee or HS3-Pi)
-Copyright (C) 2014 iHomeAutomate - http://www.iHomeAutomate.eu
+Copyright (C) 2014-2015 iHomeAutomate - http://www.iHomeAutomate.com
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

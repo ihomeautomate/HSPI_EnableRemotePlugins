@@ -21,12 +21,12 @@ bintray {
         labels = ['C#', 'HS3', 'HomeSeer', 'HomeTroller-Zee', 'HS3-Pi']   
 
         publicDownloadNumbers = false
-        attributes= ['More info': 'http://www.ihomeautomate.eu']
+        attributes= ['More info': 'http://www.ihomeautomate.com']
 
         version {
             name = attr 'version'
             vcsTag = attr 'version'
-            attributes = ['More info': 'http://www.ihomeautomate.eu']
+            attributes = ['More info': 'http://www.ihomeautomate.com']
         }
     }
 }

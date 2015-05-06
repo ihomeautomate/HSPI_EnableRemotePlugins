@@ -1,6 +1,6 @@
 ﻿/*
 HSPI_EnableRemotePlugins - HomeSeer 3 Plugin to enable remote plug-in API interface (for HomeSeer HomeTroller Zee or HS3-Pi)
-Copyright (C) 2014 iHomeAutomate - http://www.iHomeAutomate.eu
+Copyright (C) 2014-2015 iHomeAutomate - http://www.iHomeAutomate.com
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -25,8 +25,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle ("HSPI_EnableRemotePlugins")]
 [assembly: AssemblyDescription ("Enable remote plugins on HS3-Pi or HomeSeer Zee")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("http://www.iHomeAutomate.eu")]
-[assembly: AssemblyProduct ("http://www.iHomeAutomate.eu")]
+[assembly: AssemblyCompany ("http://www.iHomeAutomate.com")]
+[assembly: AssemblyProduct ("http://www.iHomeAutomate.com")]
 [assembly: AssemblyCopyright ("iHomeAutomate")]
 [assembly: AssemblyTrademark ("iHomeAutomate")]
 [assembly: AssemblyCulture ("")]
