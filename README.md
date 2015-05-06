@@ -1,6 +1,10 @@
 HSPI_EnableRemotePlugins ![HomeSeer Logo](https://lh5.googleusercontent.com/-ouDt6liIFbo/AAAAAAAAAAI/AAAAAAAAAgA/f-7s9hTpPzw/photo.jpg?sz=20)
 ==========================
 
+[![Build Status](https://travis-ci.org/ihomeautomate/gradle-homeseer-plugin.png?branch=master)](https://travis-ci.org/ihomeautomate/gradle-homeseer-plugin)
+[![Maintainer Status](http://stillmaintained.com/ihomeautomate/gradle-homeseer-plugin.png)](http://stillmaintained.com/ihomeautomate/gradle-homeseer-plugin)
+[![Download](https://api.bintray.com/packages/ihomeautomate/HomeSeer/HSPI_EnableRemotePlugins/images/download.svg) ](https://bintray.com/ihomeautomate/HomeSeer/HSPI_EnableRemotePlugins/_latestVersion)
+
 This HomeSeer plugin enables remote connections to your HS3-Pi or HomeSeer HomeTroller Zee.
 
 ## Installation
